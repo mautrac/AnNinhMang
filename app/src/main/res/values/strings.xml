@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">CHAT</string>
+    <string name="login">ĐĂNG NHẬP</string>
+    <string name="email">Email</string>
+    <string name="password">Mật khẩu</string>
+    <string name="login_failure_notification">Thông tin tài khoản hoặc mật khẩu không chính xác</string>
+    <string name="home_fragment">Chats</string>
+    <string name="hint_edit_text">Nhắn tin</string>
+    <string name="label_home_fragment">Danh sách bạn bè</string>
+    <string name="label_chatroom_fragment">Trò chuyện</string>
+    <string name="text_notification">Vui lòng nhập tin nhắn</string>
+</resources>

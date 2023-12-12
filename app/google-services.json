@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "296626691888",
+    "firebase_url": "https://messager-bf746-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "messager-bf746",
+    "storage_bucket": "messager-bf746.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:296626691888:android:e54fa19cdf4f28fc1af2f5",
+        "android_client_info": {
+          "package_name": "com.example.message"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "296626691888-hi42dquqlun92c20hgce4o5e99jbb9fc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCI39Ay1QxD3bgteKSQGBrY-gsYeZdljw0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "296626691888-hi42dquqlun92c20hgce4o5e99jbb9fc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
