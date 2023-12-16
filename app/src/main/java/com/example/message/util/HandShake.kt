@@ -1,13 +1,10 @@
 package com.example.message.util
 
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.example.message.model.BigIntegerPair
 import com.example.message.model.CommonInfor
 import com.example.message.model.Message
-import com.example.message.util.RSA;
-import com.example.message.util.AES;
+import com.example.message.sqlUtils.DbHandler
 import com.example.message.viewmodel.ChatRoomViewModel
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -15,45 +12,84 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import java.math.BigInteger
+import javax.crypto.SecretKey
+import javax.crypto.spec.SecretKeySpec
 
 class HandShake {
     private var database: DatabaseReference = Firebase.database.reference
     private val messagesRef: DatabaseReference = database.child("messages")
 
-    private val messageList = mutableListOf<CommonInfor>()
-    private var _messages = MutableLiveData<List<CommonInfor>>()
-    val messages: LiveData<List<CommonInfor>>
-        get() = _messages
-
-    val retrievedID : String;
+    val receiverID : String;
     val senderID : String;
 
-    lateinit var private_key_retriever : BigIntegerPair;
+    lateinit var receiverRsaPublicKey : BigIntegerPair;
 
-    constructor(retrievedID: String, senderID: String) {
-        this.retrievedID = retrievedID
+    constructor(receiverID: String, senderID: String) {
+        this.receiverID = receiverID
         this.senderID = senderID;
     }
 
-
-    fun getMessages(
+    fun exchangeSecretKey(
+        senderPrivateRSAKey: Pair<BigInteger, BigInteger>
     ) {
         val postListener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                messageList.clear()
 
                 for (snapshot in dataSnapshot.children) {
                     val message = snapshot.getValue(CommonInfor::class.java)
                     message?.let {
-                        if (message.title!!.contains("RSA") && message.senderID == retrievedID) {
+                        if (message.title!!.contains("AES") && message.senderID == receiverID) {
                             messagesRef.removeEventListener(this)
-                            private_key_retriever = message.key!!
+                            val encryptedAes = BigInteger(message.encryptedAESKey)
+
+                            val aesBigInteger = RSA.decrypt(encryptedAes, senderPrivateRSAKey)
+
+                            val dbHandler = DbHandler().writableDatabase
+
+
                         }
                     }
                 }
-                _messages.value = messageList
             }
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Getting Post failed, log a message
+                Log.w(ChatRoomViewModel.TAG, "loadPost:onCancelled", databaseError.toException())
+            }
+        }
+        messagesRef.addValueEventListener(postListener)
+    }
+    fun exchangeKey(
+        senderPublicRSAKey: Pair<BigInteger, BigInteger>,
+        senderPrivateRSAKey: Pair<BigInteger, BigInteger>,
+        senderAESKey: SecretKey
+    ) {
+        val postListener = object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
 
+                for (snapshot in dataSnapshot.children) {
+                    val message = snapshot.getValue(CommonInfor::class.java)
+                    message?.let {
+                        if (message.title!!.contains("RSA") && message.senderID == receiverID) {
+                            messagesRef.removeEventListener(this)
+                            receiverRsaPublicKey = message.publicRsaKey!!
+                            val aesKey = BigInteger(senderAESKey.encoded!!)
+
+                            val f = BigInteger(receiverRsaPublicKey.first)
+                            val s = BigInteger(receiverRsaPublicKey.second)
+                            val receiverPubK = Pair(f, s)
+
+                            val encryptedAESKey = RSA.encrypt(aesKey, receiverPubK)
+
+                            val mess = CommonInfor("ENCRYPTED AES KEY",senderID, receiverID, null, encryptedAESKey.toString())
+
+                            sendMessage(mess)
+
+                            exchangeSecretKey(senderPrivateRSAKey)
+                        }
+                    }
+                }
+            }
             override fun onCancelled(databaseError: DatabaseError) {
                 // Getting Post failed, log a message
                 Log.w(ChatRoomViewModel.TAG, "loadPost:onCancelled", databaseError.toException())
@@ -77,18 +113,23 @@ class HandShake {
     public fun handShake() {
 
 
-        val keys = RSA.generateRSAKeys()
+        val RSAKeySender = RSA.generateRSAKeys()
         //public key
-        Log.d("public key", keys.first.toString())
-        val public = keys.first
+        Log.d("public key", RSAKeySender.first.toString())
+        val senderPublicRSAKey = RSAKeySender.first
         //private key
-        Log.d("private key", keys.second.toString())
-        val private = keys.second
+        Log.d("private key", RSAKeySender.second.toString())
+        val senderPrivateRSAKey = RSAKeySender.second
 
-        val key_send = BigIntegerPair(public.first.toString(), public.second.toString())
-        val message = CommonInfor("Public RSA key", senderID, retrievedID, key_send)
+        val key_send = BigIntegerPair(senderPublicRSAKey.first.toString(), senderPublicRSAKey.second.toString())
+        val message = CommonInfor("Public RSA key", senderID, receiverID, key_send)
 
-        getMessages()
+        sendMessage(message)
+
+        val aes : AES = AES()
+        aes.init()
+
+        exchangeKey(senderPublicRSAKey, senderPrivateRSAKey, aes.getKey())
 
 
     }
