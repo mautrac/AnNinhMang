@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.message.model.Message
+import com.example.message.util.AES
 import com.example.message.util.RSA
 import com.example.message.util.Temp
 import com.example.message.util.utf8ToBigInteger

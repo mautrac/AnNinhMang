@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "970652028203",
+    "project_id": "an-ninh-mang-d9daa",
+    "storage_bucket": "an-ninh-mang-d9daa.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:970652028203:android:1067f37152ff9b1227496e",
+        "android_client_info": {
+          "package_name": "com.example.message"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA_Nsv8oFlJ1h5aUtkFf1K1ddBOBjPf5Qg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
