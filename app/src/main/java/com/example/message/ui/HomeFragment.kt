@@ -1,5 +1,6 @@
 package com.example.message.ui
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -7,8 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.example.message.AddFriendActivity
 import com.example.message.databinding.FragmentHomeBinding
 import com.example.message.ui.adapter.UserAdapter
 import com.example.message.util.Temp
@@ -49,6 +50,10 @@ class HomeFragment : Fragment() {
         }
 
         binding.recyclerViewUsers.adapter = adapter
+
+        binding.toAddFriend.setOnClickListener {
+            startActivity(Intent(requireContext(), AddFriendActivity::class.java))
+        }
 
         viewModel.users.observe(this@HomeFragment.viewLifecycleOwner) { items ->
              items?.let {
