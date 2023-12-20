@@ -9,4 +9,7 @@
     <string name="label_home_fragment">Danh sách bạn bè</string>
     <string name="label_chatroom_fragment">Trò chuyện</string>
     <string name="text_notification">Vui lòng nhập tin nhắn</string>
+    <string name="title_activity_add_friend">AddFriend</string>
+    <string name="them_ban">Thêm bạn</string>
+    <string name="nhap_email">Nhập email</string>
 </resources>
