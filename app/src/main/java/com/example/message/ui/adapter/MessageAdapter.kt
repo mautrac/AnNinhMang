@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.message.databinding.ItemRetrievedMessageBinding
 import com.example.message.databinding.ItemSentMessageBinding
 import com.example.message.model.Message
+import com.example.message.util.AESEncryption
 import com.example.message.util.RSA
 import com.example.message.util.Temp
 import com.example.message.util.bigIntegerToUtf8
@@ -19,8 +20,8 @@ class MessageAdapter(
 ) : ListAdapter<Message, RecyclerView.ViewHolder>(DiffCallback) {
 
     private val privateKey: Pair<BigInteger, BigInteger> = Pair(
-        Temp.keyPair.second.first,
-        Temp.keyPair.second.second
+        Temp.keyPair!!.second.first,
+        Temp.keyPair!!.second.second
     )
 
     private val SENT_VIEW_TYPE = 1
@@ -86,14 +87,15 @@ class MessageAdapter(
 
             is ItemRetrievedViewHolder -> {
                 val text = message.text.toString()
-                val textBigInteger = RSA.decrypt(
-                    BigInteger(text),
-                    privateKey
-                )
-                Log.d(this.toString(), "$textBigInteger")
-
-                message.text = bigIntegerToUtf8(textBigInteger)
-
+//                val textBigInteger = RSA.decrypt(
+//                    BigInteger(text),
+//                    privateKey
+//                )
+//                Log.d(this.toString(), "$textBigInteger")
+//                message.text = bigIntegerToUtf8(textBigInteger)
+                val temp = AESEncryption.decrypt(text.toByteArray(), Temp.aesKey!!).toString()
+                Log.d(this.toString(), temp)
+                message.text = temp
                 holder.bind(message)
             }
         }

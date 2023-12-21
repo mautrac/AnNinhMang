@@ -22,9 +22,10 @@ import java.math.BigInteger
 import javax.crypto.spec.SecretKeySpec
 
 class ChatRoomFragment : Fragment() {
-
-    val context: Context = requireContext()
-
+    //@get:JvmName("getFragmentContext")
+    //var context: Context
+    //@get:JvmName("getAdapterContext") private val context: Context
+    //var context: Context = requireContext()
     private val viewModel: ChatRoomViewModel by activityViewModels {
         ChatRoomViewModelFactory()
     }
@@ -56,27 +57,7 @@ class ChatRoomFragment : Fragment() {
             BigInteger(Temp.retriever?.publicKey?.first.toString()),
             BigInteger(Temp.retriever?.publicKey?.second.toString()),
         )
-        //read aeskey
-        val path = context.getFilesDir()
-        val letDirectory = File(path, "Keys")
 
-        val file = File(letDirectory, "Records.txt")
-
-        val contents = file.readText()
-        var i = 0
-        var spaceIdx = 0
-        for (j in 0..contents.length) {
-            if (contents[j] == '\n') {
-                val retrieverId = contents.substring(i, spaceIdx)
-                val aesKeyStr = contents.substring(spaceIdx + 1, j)
-                if (retrieverId.equals(uid)) {
-                    val aesKeyByteArray = aesKeyStr.toByteArray()
-                    Temp.aesKey = SecretKeySpec(aesKeyByteArray, "AES")
-                }
-            }
-            if (contents[j] == ' ')
-                spaceIdx = j
-        }
 
         Log.d(this.toString(), Temp.retrieverPublicKey.toString())
         val currentUserUid = Temp.currentUser?.uid ?: ""

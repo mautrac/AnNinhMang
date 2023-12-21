@@ -16,7 +16,7 @@ import javax.crypto.SecretKey
 object Temp {
     var currentUser: FirebaseUser? = null
     var retriever: User? = null
-    val keyPair = RSA.generateRSAKeys()
+    var keyPair: Pair<Pair<BigInteger, BigInteger>, Pair<BigInteger, BigInteger>>? = null
     var messageTemp: String? = null
     var retrieverPublicKey: Pair<BigInteger, BigInteger>? = null
     var aesKey: SecretKey? = null

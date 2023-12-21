@@ -1,6 +1,9 @@
 package com.example.message.viewmodel
 
+import android.app.Application
+import android.content.Context
 import android.util.Log
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -8,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.message.model.BigIntegerPair
 import com.example.message.model.User
+import com.example.message.util.RSA
 import com.example.message.util.Temp
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
@@ -18,8 +22,10 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.math.BigInteger
 
-class LoginViewModel : ViewModel() {
+class LoginViewModel: ViewModel() {
+
 
     private val auth = Firebase.auth
 
@@ -28,7 +34,13 @@ class LoginViewModel : ViewModel() {
     private val userRef: DatabaseReference = database.child("users")
 
     private val _loginResult = MutableLiveData<Boolean>()
+    private var _publicKey = MutableLiveData<Pair<BigInteger, BigInteger>>()
+    private var _checkKeyExist = MutableLiveData<Boolean>(false)
+
     val loginResult: LiveData<Boolean> = _loginResult
+    val publicKey: LiveData<Pair<BigInteger, BigInteger>> = _publicKey
+    val checKeyExist : LiveData<Boolean> = _checkKeyExist
+
 
     fun login(email: String, password: String) {
         if (checkLogin(email, password)) {
@@ -38,21 +50,33 @@ class LoginViewModel : ViewModel() {
                 if (task.isSuccessful) {
                     _loginResult.value = true
                     Temp.currentUser = auth.currentUser
-                    val publicKey = Temp.keyPair.first
 
-                    Log.d(TAG, "${Temp.keyPair.first}\n${Temp.keyPair.second}")
-                    viewModelScope.launch(Dispatchers.IO) {
-                        saveUser(
-                            User(
-                                Temp.currentUser?.uid,
-                                Temp.currentUser?.email,
-                                BigIntegerPair(
-                                    publicKey.first.toString(),
-                                    publicKey.second.toString()
-                                )
-                            )
-                        )
-                    }
+                    Temp.keyPair = RSA.generateRSAKeys()
+                    var publicKey = Temp.keyPair!!.first
+
+
+
+                    userRef.orderByChild("email").equalTo(email)
+                        .addListenerForSingleValueEvent(object : ValueEventListener {
+                            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                                if (dataSnapshot.exists()) {
+                                    _checkKeyExist.value = true
+                                    Log.d("check", checKeyExist.toString())
+                                    Log.d("login key", dataSnapshot.children.first().getValue(User::class.java).toString())
+                                    //publicKey = dataSnapshot.children.first().key
+                                }
+
+                            }
+                            override fun onCancelled(databaseError: DatabaseError) {
+                                // ...
+                            }
+                        })
+
+
+
+
+                    Log.d(TAG, "${Temp.keyPair!!.first}\n${Temp.keyPair!!.second}")
+
                 } else {
                     _loginResult.value = false
                 }
@@ -60,29 +84,7 @@ class LoginViewModel : ViewModel() {
         }
     }
 
-    private fun saveUser(user: User) {
 
-        userRef.orderByChild("email").equalTo(user.email)
-            .addListenerForSingleValueEvent(object : ValueEventListener {
-
-                override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    if (dataSnapshot.exists()) {
-                        val userKey = dataSnapshot.children.first().key
-                        userKey?.let {
-                            userRef.child(userKey).child("publicKey")
-                                .setValue(user.publicKey)
-                        }
-                        return
-                    } else {
-                        userRef.push().setValue(user)
-                    }
-                }
-
-                override fun onCancelled(databaseError: DatabaseError) {
-                    // ...
-                }
-            })
-    }
 
     private fun checkLogin(
         email: String,
@@ -95,6 +97,7 @@ class LoginViewModel : ViewModel() {
 }
 
 class LoginViewModelFactory : ViewModelProvider.Factory {
+
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(LoginViewModel::class.java))
             @Suppress("UNCHECKED_CAST")
