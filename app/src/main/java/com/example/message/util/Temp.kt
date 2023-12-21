@@ -3,6 +3,7 @@ package com.example.message.util
 import com.example.message.model.User
 import com.google.firebase.auth.FirebaseUser
 import java.math.BigInteger
+import javax.crypto.SecretKey
 
 /**
  * class [Temp] Store data cache (Singleton)
@@ -18,4 +19,5 @@ object Temp {
     val keyPair = RSA.generateRSAKeys()
     var messageTemp: String? = null
     var retrieverPublicKey: Pair<BigInteger, BigInteger>? = null
+    var aesKey: SecretKey? = null
 }

@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.message.model.Message
+import com.example.message.util.AESEncryption
 import com.example.message.util.RSA
 import com.example.message.util.Temp
 import com.example.message.util.utf8ToBigInteger
@@ -66,11 +67,11 @@ class ChatRoomViewModel : ViewModel() {
         retrievedID: String,
         text: String
     ) {
-
-        val textEncrypted = RSA.encrypt(
-            utf8ToBigInteger(text),
-            Temp.retrieverPublicKey!!
-        ).toString()
+        val textEncrypted = AESEncryption.encrypt(text.toByteArray(), Temp.aesKey!!).toString()
+//        val textEncrypted = RSA.encrypt(
+//            utf8ToBigInteger(text),
+//            Temp.retrieverPublicKey!!
+//        ).toString()
 
         messagesRef
             .push()
