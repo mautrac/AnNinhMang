@@ -32,8 +32,6 @@ class ChatRoomViewModel : ViewModel() {
     fun getMessages(
         senderID: String,
         retrievedID: String
-
-
     ) {
         val postListener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
