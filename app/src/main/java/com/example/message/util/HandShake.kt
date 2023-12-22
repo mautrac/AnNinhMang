@@ -2,16 +2,24 @@ package com.example.message.util
 
 
 import android.content.Context
+import android.os.Environment
+import android.util.Log
 import com.example.message.model.CommonInfor
+import com.google.android.gms.tasks.Tasks
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import java.io.File
 import java.math.BigInteger
+import java.util.LinkedList
 
 class HandShake {
     private var database: DatabaseReference = Firebase.database.reference
-    private val messagesRef: DatabaseReference = database.child("hand-shakes")
+    private val handShakeRef: DatabaseReference = database.child("hand-shakes")
     //private val messagesRef: DatabaseReference = database.child("handshake")
 
     val receiverID : String
@@ -30,7 +38,7 @@ class HandShake {
         message: CommonInfor
     ) {
 
-        messagesRef
+        handShakeRef
             .push()
             .setValue(
                 message
@@ -38,7 +46,7 @@ class HandShake {
     }
 
     public fun sendHandShakeRequest() {
-
+        Log.d("sending request", "sending...")
         //SecretKey
         val aesKey = AESEncryption.generateKey()
 
@@ -56,17 +64,27 @@ class HandShake {
         sendMessage(message)
 
         saveAESKey(encodedKey)
+        Log.d("request sent", message.toString())
+
     }
 
-    public fun acceptAllHandShakeReqest() {
-        val path = context.getFilesDir()
+    public fun acceptHandShakeRequest() {
+        var handShake = CommonInfor()
 
-        val letDirectory = File(path, "AESKeys")
-        letDirectory.mkdirs()
-
-        val file = File(letDirectory, senderID + ".txt")
-
-//        file.appendText(receiverID + " " + key.toString() + "\n")
+        GlobalScope.launch(Dispatchers.IO) {
+            val result = async {
+                val snapshot = Tasks.await(handShakeRef.get())
+                return@async snapshot
+            }.await()
+            result.children.forEach {ds ->
+                val data = ds.getValue(CommonInfor::class.java)
+                if (data!!.senderID == receiverID && data!!.retrieverID == senderID)
+                    handShake = data
+            }
+        }
+        val encryptedAES = handShake.encryptedAESKey
+        val aesKey = RSA.decrypt(encryptedAES!!.toBigInteger(), Temp.keyPair!!.second)
+        saveAESKey(aesKey.toByteArray())
     }
 
     public fun saveAESKey(key: ByteArray) {

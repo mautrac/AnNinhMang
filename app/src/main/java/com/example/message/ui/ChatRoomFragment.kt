@@ -17,18 +17,21 @@ import com.example.message.ui.adapter.MessageAdapter
 import com.example.message.util.Temp
 import com.example.message.viewmodel.ChatRoomViewModel
 import com.example.message.viewmodel.ChatRoomViewModelFactory
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import java.io.File
 import java.math.BigInteger
 import javax.crypto.spec.SecretKeySpec
 
 class ChatRoomFragment : Fragment() {
-    //@get:JvmName("getFragmentContext")
-    //var context: Context
-    //@get:JvmName("getAdapterContext") private val context: Context
-    //var context: Context = requireContext()
+
     private val viewModel: ChatRoomViewModel by activityViewModels {
         ChatRoomViewModelFactory()
     }
+
+    private var database: DatabaseReference = Firebase.database.reference
+    private val handShakeRef: DatabaseReference = database.child("hand-shakes")
 
     private val navigationArgs: ChatRoomFragmentArgs by navArgs()
 
@@ -53,10 +56,15 @@ class ChatRoomFragment : Fragment() {
         uid = navigationArgs.uid
         Log.d(this.toString(), uid)
 
+        //set
         Temp.retrieverPublicKey = Pair(
             BigInteger(Temp.retriever?.publicKey?.first.toString()),
             BigInteger(Temp.retriever?.publicKey?.second.toString()),
         )
+        //set aes key
+        if (!readAESKeyToTemp(uid) ) {
+
+        }
 
 
         Log.d(this.toString(), Temp.retrieverPublicKey.toString())
@@ -96,14 +104,15 @@ class ChatRoomFragment : Fragment() {
 
     }
 
-    private fun readAESKey() {
+    private fun readAESKeyToTemp(uid: String) : Boolean {
         //read aeskey
         //val path = context.getFilesDir()
         val path = requireContext().filesDir
 
         val letDirectory = File(path, "AESKeys")
 
-        val file = File(letDirectory, "Records.txt")
+        val file = File(letDirectory, Temp.currentUser!!.uid + ".txt")
+        var check = false
         if (file.isFile) {
             val contents = file.readText()
             var i = 0
@@ -115,6 +124,8 @@ class ChatRoomFragment : Fragment() {
                     if (retrieverId.equals(uid)) {
                         val aesKeyByteArray = aesKeyStr.toByteArray()
                         Temp.aesKey = SecretKeySpec(aesKeyByteArray, "AES")
+                        check = true
+                        break
                     }
                 }
                 if (contents[j] == ' ')
@@ -122,6 +133,7 @@ class ChatRoomFragment : Fragment() {
             }
             Log.d(this.toString(), Temp.aesKey.toString())
         }
+        return check
     }
 
 }

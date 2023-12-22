@@ -49,7 +49,7 @@ class LoginViewModel: ViewModel() {
                 if (task.isSuccessful) {
 
                     Temp.currentUser = auth.currentUser
-                    Log.d(this.toString(), Temp.currentUser.toString())
+                    Log.d("Login", Temp.currentUser.toString())
 
                     GlobalScope.launch(Dispatchers.IO) {
                         val result = async {
