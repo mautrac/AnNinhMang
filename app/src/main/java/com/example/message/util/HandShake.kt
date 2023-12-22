@@ -12,13 +12,14 @@ import java.math.BigInteger
 
 class HandShake {
     private var database: DatabaseReference = Firebase.database.reference
-    private val messagesRef: DatabaseReference = database.child("handshake")
+    private val messagesRef: DatabaseReference = database.child("hand-shakes")
     //private val messagesRef: DatabaseReference = database.child("handshake")
 
     val receiverID : String
     val senderID : String
     val receiverPK: Pair<BigInteger, BigInteger>
     val context: Context;
+
     constructor(receiverID: String, senderID: String, receiverPK: Pair<BigInteger, BigInteger>, context: Context) {
         this.receiverID = receiverID
         this.senderID = senderID;
@@ -37,7 +38,7 @@ class HandShake {
             )
     }
 
-    public fun handShake() {
+    public fun sendHandShakeRequest() {
 
         //SecretKey
         val aesKey = AESEncryption.generateKey()
@@ -55,15 +56,28 @@ class HandShake {
 
         sendMessage(message)
 
+        saveAESKey(encodedKey)
+    }
+
+    public fun acceptAllHandShakeReqest() {
         val path = context.getFilesDir()
 
-        val letDirectory = File(path, "Keys")
+        val letDirectory = File(path, "AESKeys")
         letDirectory.mkdirs()
 
-        val file = File(letDirectory, "Records.txt")
+        val file = File(letDirectory, senderID + ".txt")
 
-        file.appendText(receiverID + " " + encodedKey.toString() + "\n")
+        file.appendText(receiverID + " " + key.toString() + "\n")
+    }
 
+    public fun saveAESKey(key: ByteArray) {
+        val path = context.getFilesDir()
 
+        val letDirectory = File(path, "AESKeys")
+        letDirectory.mkdirs()
+
+        val file = File(letDirectory, senderID + ".txt")
+
+        file.appendText(receiverID + " " + key.toString() + "\n")
     }
 }

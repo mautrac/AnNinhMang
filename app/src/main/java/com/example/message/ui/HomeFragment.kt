@@ -39,6 +39,8 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        Log.d("User", Temp.currentUser!!.email.toString())
+
         val adapter = UserAdapter {
             Temp.retriever = it
             Log.d(this.toString(), it.toString())
