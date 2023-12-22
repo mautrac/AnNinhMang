@@ -12,6 +12,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.message.R
 import com.example.message.databinding.FragmentLoginBinding
+import com.example.message.model.BigIntegerPair
 import com.example.message.model.User
 import com.example.message.util.RSA
 import com.example.message.util.Temp
@@ -52,9 +53,20 @@ class LoginFragment : Fragment() {
 
         viewModel.loginResult.observe(this.viewLifecycleOwner) {
             if (it) {
-                if (viewModel.checKeyExist.value == false) {
+                if (viewModel.checKeyExist.value == false && viewModel.publicKey != null) {
                     Temp.keyPair = RSA.generateRSAKeys()
-                    requireContext().
+
+                    var newUser = User(Temp.currentUser!!.uid,
+                                Temp.currentUser!!.email,
+                                BigIntegerPair(Temp.keyPair!!.first.first.toString(),
+                                                Temp.keyPair!!.first.second.toString()
+                                    )
+                        )
+                    saveUser(newUser)
+                    savePrivateRSAKey()
+                }
+                else {
+                    getRSAKey()
                 }
                 findNavController().navigate(R.id.action_loginFragment_to_homeFragment)
             } else {
@@ -97,31 +109,47 @@ class LoginFragment : Fragment() {
             })
     }
 
-    private fun readKey() {
+    private fun getRSAKey() {
         //read aeskey
         //val path = context.getFilesDir()
         val path = requireContext().filesDir
 
-        val letDirectory = File(path, "Keys")
+        val letDirectory = File(path, "RSAKeys")
 
-        val file = File(letDirectory, "Records.txt")
+        val file = File(letDirectory, Temp.currentUser!!.uid + ".txt")
         if (file.isFile) {
             val contents = file.readText()
             var i = 0
-            var spaceIdx = 0
+
             for (j in 0..contents.length) {
                 if (contents[j] == '\n') {
-                    val retrieverId = contents.substring(i, spaceIdx)
-                    val aesKeyStr = contents.substring(spaceIdx + 1, j)
-                    if (retrieverId.equals(uid)) {
-                        val aesKeyByteArray = aesKeyStr.toByteArray()
-                        Temp.aesKey = SecretKeySpec(aesKeyByteArray, "AES")
-                    }
+                    val first = contents.substring(i, j)
+                    val second = contents.substring(j + 1, contents.length)
+                    val privateKey = Pair(first.toBigInteger(), second.toBigInteger())
+                    val publicKey = Pair(viewModel.publicKey.value!!.first!!.toBigInteger(),
+                                viewModel.publicKey.value!!.second!!.toBigInteger() )
+                    Temp.keyPair = Pair(publicKey, privateKey)
+
+                    break
                 }
-                if (contents[j] == ' ')
-                    spaceIdx = j
+
             }
-            Log.d(this.toString(), Temp.aesKey.toString())
         }
+        Log.d("READ RSA KEYS", Temp.keyPair.toString())
+    }
+
+    fun savePrivateRSAKey() {
+        //read aeskey
+        //val path = context.getFilesDir()
+        val path = requireContext().filesDir
+
+        val letDirectory = File(path, "RSAKeys")
+        letDirectory.mkdirs()
+
+        val file = File(letDirectory, Temp.currentUser!!.uid + ".txt")
+        file.createNewFile()
+        file.appendText(Temp.keyPair!!.second.first.toString() + "/n")
+        file.appendText(Temp.keyPair!!.second.second.toString() + "/n")
+
     }
 }

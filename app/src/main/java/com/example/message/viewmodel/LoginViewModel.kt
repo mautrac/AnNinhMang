@@ -13,6 +13,7 @@ import com.example.message.model.BigIntegerPair
 import com.example.message.model.User
 import com.example.message.util.RSA
 import com.example.message.util.Temp
+import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -21,8 +22,12 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.math.BigInteger
+import java.util.concurrent.CountDownLatch
 
 class LoginViewModel: ViewModel() {
 
@@ -34,11 +39,11 @@ class LoginViewModel: ViewModel() {
     private val userRef: DatabaseReference = database.child("users")
 
     private val _loginResult = MutableLiveData<Boolean>()
-    private var _publicKey = MutableLiveData<Pair<BigInteger, BigInteger>>()
+    private var _publicKey = MutableLiveData<BigIntegerPair>()
     private var _checkKeyExist = MutableLiveData<Boolean>(false)
 
     val loginResult: LiveData<Boolean> = _loginResult
-    val publicKey: LiveData<Pair<BigInteger, BigInteger>> = _publicKey
+    val publicKey: LiveData<BigIntegerPair> = _publicKey
     val checKeyExist : LiveData<Boolean> = _checkKeyExist
 
 
@@ -48,35 +53,65 @@ class LoginViewModel: ViewModel() {
         } else {
             auth.signInWithEmailAndPassword(email, password).addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    _loginResult.value = true
+
                     Temp.currentUser = auth.currentUser
+                    Log.d(this.toString(), Temp.currentUser.toString())
 
-                    Temp.keyPair = RSA.generateRSAKeys()
-                    var publicKey = Temp.keyPair!!.first
-
-
-
-                    userRef.orderByChild("email").equalTo(email)
-                        .addListenerForSingleValueEvent(object : ValueEventListener {
-                            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                                if (dataSnapshot.exists()) {
-                                    _checkKeyExist.value = true
-                                    Log.d("check", checKeyExist.toString())
-                                    Log.d("login key", dataSnapshot.children.first().getValue(User::class.java).toString())
-                                    //publicKey = dataSnapshot.children.first().key
-                                }
-
+                    GlobalScope.launch(Dispatchers.IO) {
+                        val result = async {
+                            val snapshot = Tasks.await(userRef.orderByChild("email").equalTo(email).get())
+                            if (snapshot.exists()) {
+                                snapshot.children.first().getValue(User::class.java)!!.publicKey!!
+                            } else {
+                                null
                             }
-                            override fun onCancelled(databaseError: DatabaseError) {
-                                // ...
-                            }
-                        })
+                        }.await()
+
+                        withContext(Dispatchers.Main) {
+                            _publicKey.value = result!!
+                        }
+                    }
+                    //Temp.keyPair = RSA.generateRSAKeys()
+                    //var publicKey = Temp.keyPair!!.first
+
+//                    userRef.orderByChild("email").equalTo(email)
+//                        .addListenerForSingleValueEvent(object : ValueEventListener {
+//                            override fun onDataChange(dataSnapshot: DataSnapshot) {
+//                                if (dataSnapshot.exists()) {
+//                                    _checkKeyExist.value = true
+//                                    Log.d("check", checKeyExist.toString())
+//                                    Log.d("login key", dataSnapshot.children.first().getValue(User::class.java).toString())
+//                                    _publicKey.value = dataSnapshot.children.first().getValue(User::class.java)!!.publicKey!!
+//                                    //publicKey = dataSnapshot.children.first().key
+//                                }
+//
+//                            }
+//                            override fun onCancelled(databaseError: DatabaseError) {
+//                                // ...
+//                            }
+//                        })
+
+
+
+//                    viewModelScope.launch(Dispatchers.IO) {
+//                        saveUser(
+//                            User(
+//                                Temp.currentUser?.uid,
+//                                Temp.currentUser?.email,
+//                                BigIntegerPair(
+//                                    publicKey.first.toString(),
+//                                    publicKey.second.toString()
+//                                )
+//                            )
+//                        )
+//                    }
 
 
 
 
-                    Log.d(TAG, "${Temp.keyPair!!.first}\n${Temp.keyPair!!.second}")
+                    //Log.d(TAG, "${Temp.keyPair!!.first}\n${Temp.keyPair!!.second}")
 
+                    _loginResult.value = true
                 } else {
                     _loginResult.value = false
                 }

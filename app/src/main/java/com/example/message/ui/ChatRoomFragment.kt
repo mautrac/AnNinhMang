@@ -96,4 +96,32 @@ class ChatRoomFragment : Fragment() {
 
     }
 
+    private fun readAESKey() {
+        //read aeskey
+        //val path = context.getFilesDir()
+        val path = requireContext().filesDir
+
+        val letDirectory = File(path, "AESKeys")
+
+        val file = File(letDirectory, "Records.txt")
+        if (file.isFile) {
+            val contents = file.readText()
+            var i = 0
+            var spaceIdx = 0
+            for (j in 0..contents.length) {
+                if (contents[j] == '\n') {
+                    val retrieverId = contents.substring(i, spaceIdx)
+                    val aesKeyStr = contents.substring(spaceIdx + 1, j)
+                    if (retrieverId.equals(uid)) {
+                        val aesKeyByteArray = aesKeyStr.toByteArray()
+                        Temp.aesKey = SecretKeySpec(aesKeyByteArray, "AES")
+                    }
+                }
+                if (contents[j] == ' ')
+                    spaceIdx = j
+            }
+            Log.d(this.toString(), Temp.aesKey.toString())
+        }
+    }
+
 }
