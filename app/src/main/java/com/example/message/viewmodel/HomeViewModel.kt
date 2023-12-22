@@ -11,20 +11,14 @@ import com.google.android.gms.tasks.Tasks
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
-import com.google.firebase.database.ktx.values
-import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-
 import java.util.LinkedList
-import kotlin.collections.ArrayList
 
 class HomeViewModel : ViewModel() {
 
@@ -101,7 +95,7 @@ class HomeViewModel : ViewModel() {
 
 class HomeViewModelFactory : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if(modelClass.isAssignableFrom(HomeViewModel::class.java))
+        if (modelClass.isAssignableFrom(HomeViewModel::class.java))
             @Suppress("UNCHECKED_CAST")
             return HomeViewModel() as T
         throw IllegalArgumentException("Unknown ViewModel class")

@@ -20,4 +20,5 @@ object Temp {
     var messageTemp: String? = null
     var retrieverPublicKey: Pair<BigInteger, BigInteger>? = null
     var aesKey: SecretKey? = null
+    var realtimeKey:String? =null
 }

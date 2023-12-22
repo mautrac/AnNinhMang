@@ -2,7 +2,6 @@ package com.example.message.util
 
 
 import android.content.Context
-import android.os.Environment
 import com.example.message.model.CommonInfor
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
@@ -67,7 +66,7 @@ class HandShake {
 
         val file = File(letDirectory, senderID + ".txt")
 
-        file.appendText(receiverID + " " + key.toString() + "\n")
+//        file.appendText(receiverID + " " + key.toString() + "\n")
     }
 
     public fun saveAESKey(key: ByteArray) {
