@@ -2,6 +2,7 @@ package com.example.message.ui
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Base64
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +15,7 @@ import androidx.navigation.fragment.navArgs
 import com.example.message.R
 import com.example.message.databinding.FragmentChatroomBinding
 import com.example.message.ui.adapter.MessageAdapter
+import com.example.message.util.HandShake
 import com.example.message.util.Temp
 import com.example.message.viewmodel.ChatRoomViewModel
 import com.example.message.viewmodel.ChatRoomViewModelFactory
@@ -62,9 +64,18 @@ class ChatRoomFragment : Fragment() {
             BigInteger(Temp.retriever?.publicKey?.second.toString()),
         )
         //set aes key
-        if (!readAESKeyToTemp(uid) ) {
 
-        }
+        var hs = HandShake(uid, Temp.currentUser!!.uid, Temp.retrieverPublicKey!!, requireContext())
+        hs.acceptHandShakeRequest()
+
+//        if (!readAESKeyToTemp(uid) ) {
+//            Log.d("read key", "fail")
+//            //readAESKeyToTemp(uid)
+//
+//        } else {
+//            Log.d("read key", "scuccess")
+//            Log.d("key after reading", Temp.aesKey!!.encoded.size.toString())
+//        }
 
 
         Log.d(this.toString(), Temp.retrieverPublicKey.toString())
@@ -113,8 +124,10 @@ class ChatRoomFragment : Fragment() {
 
         val file = File(letDirectory, Temp.currentUser!!.uid + ".txt")
         var check = false
+
         if (file.isFile) {
             val contents = file.readText()
+            Log.d("file", contents)
             var i = 0
             var spaceIdx = 0
             for (j in 0..contents.length) {
@@ -122,7 +135,7 @@ class ChatRoomFragment : Fragment() {
                     val retrieverId = contents.substring(i, spaceIdx)
                     val aesKeyStr = contents.substring(spaceIdx + 1, j)
                     if (retrieverId.equals(uid)) {
-                        val aesKeyByteArray = aesKeyStr.toByteArray()
+                        val aesKeyByteArray = Base64.decode(aesKeyStr, Base64.DEFAULT)
                         Temp.aesKey = SecretKeySpec(aesKeyByteArray, "AES")
                         check = true
                         break
@@ -131,7 +144,7 @@ class ChatRoomFragment : Fragment() {
                 if (contents[j] == ' ')
                     spaceIdx = j
             }
-            Log.d(this.toString(), Temp.aesKey.toString())
+            Log.d("read key from file", Temp.aesKey!!.encoded.size.toString())
         }
         return check
     }

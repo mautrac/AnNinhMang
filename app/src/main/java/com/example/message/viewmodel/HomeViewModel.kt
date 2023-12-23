@@ -1,6 +1,5 @@
 package com.example.message.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -8,24 +7,12 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.message.model.CommonInfor
 import com.example.message.model.User
 import com.example.message.util.Temp
-import com.google.android.gms.tasks.Tasks
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
-import com.google.firebase.database.ktx.values
-import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-
-import java.util.LinkedList
-import kotlin.collections.ArrayList
 
 class HomeViewModel : ViewModel() {
 
@@ -56,6 +43,7 @@ class HomeViewModel : ViewModel() {
 
         val handShakeRef = database.child("hand-shakes")
         val usersRef = database.child("users")
+
 
         val postListenerHandShake = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
@@ -111,13 +99,6 @@ class HomeViewModel : ViewModel() {
 
         usersRef.addValueEventListener(postListener)
 
-
-//        val db = Firebase.firestore
-//        val docRef = db.collection("hand-shakes")
-//
-//        docRef.whereEqualTo("senderID", Temp.currentUser!!.uid)
-//        docRef.whereEqualTo("retrieverID", Temp.currentUser!!.uid)
-
     }
 
     companion object {
@@ -127,7 +108,7 @@ class HomeViewModel : ViewModel() {
 
 class HomeViewModelFactory : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if(modelClass.isAssignableFrom(HomeViewModel::class.java))
+        if (modelClass.isAssignableFrom(HomeViewModel::class.java))
             @Suppress("UNCHECKED_CAST")
             return HomeViewModel() as T
         throw IllegalArgumentException("Unknown ViewModel class")

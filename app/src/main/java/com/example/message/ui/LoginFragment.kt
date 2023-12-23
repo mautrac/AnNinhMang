@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.message.R
 import com.example.message.databinding.FragmentLoginBinding
@@ -25,7 +24,6 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import java.io.File
-import javax.crypto.spec.SecretKeySpec
 
 class LoginFragment : Fragment() {
 
@@ -86,7 +84,6 @@ class LoginFragment : Fragment() {
     }
 
     private fun saveUser(user: User) {
-
         userRef.orderByChild("email").equalTo(user.email)
             .addListenerForSingleValueEvent(object : ValueEventListener {
 
@@ -94,20 +91,26 @@ class LoginFragment : Fragment() {
                     if (dataSnapshot.exists()) {
                         val userKey = dataSnapshot.children.first().key
                         userKey?.let {
+                            // Cập nhật publicKey cho người dùng hiện có
                             userRef.child(userKey).child("publicKey")
                                 .setValue(user.publicKey)
+                            // Cập nhật danh sách bạn bè ở đây nếu bạn muốn
                         }
                         return
                     } else {
+                        // Tạo người dùng mới
                         userRef.push().setValue(user)
                     }
                 }
 
                 override fun onCancelled(databaseError: DatabaseError) {
-                    // ...
+                    // Xử lý lỗi nếu cần
                 }
             })
     }
+
+    // Phương thức để thêm bạn
+
 
     private fun getRSAKey() {
         //read aeskey
@@ -124,7 +127,7 @@ class LoginFragment : Fragment() {
             for (j in 0..contents.length) {
                 if (contents[j] == '\n') {
                     val first = contents.substring(i, j)
-                    val second = contents.substring(j + 1, contents.length)
+                    val second = contents.substring(j + 1, contents.length - 1)
                     val privateKey = Pair(first.toBigInteger(), second.toBigInteger())
                     val publicKey = Pair(viewModel.publicKey.value!!.first!!.toBigInteger(),
                                 viewModel.publicKey.value!!.second!!.toBigInteger() )

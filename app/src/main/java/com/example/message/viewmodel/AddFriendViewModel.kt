@@ -5,15 +5,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.message.model.CommonInfor
 import com.example.message.model.User
-import com.example.message.util.Temp
-import com.google.android.gms.tasks.Tasks
 import com.google.firebase.database.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
 
 class AddFriendViewModel : ViewModel() {
     private val database = FirebaseDatabase.getInstance().getReference("users")
@@ -26,25 +19,6 @@ class AddFriendViewModel : ViewModel() {
         get() = _result
 
     fun checkUserExists(email: String) {
-
-//        GlobalScope.launch(Dispatchers.IO) {
-//            val result = async {
-//                val snapshot = Tasks.await(database.get())
-//                return@async snapshot
-//            }.await()
-//            result.children.forEach {ds ->
-//                val data = ds.getValue(User::class.java)
-//                if (data!!.email.equals(email)) {
-//                    //Log.d("add friend", receiver.value.toString())
-//                    //_receiver.value = data!!
-//                    //Log.d("addf,", data.toString())
-//                    _result.value = "success"
-//                }
-//                //_receiver.value = data!!
-//                Log.d("addf", _result.value.toString())
-//            }
-//        }
-
         database.orderByChild("email").equalTo(email)
             .addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
