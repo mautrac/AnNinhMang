@@ -2,11 +2,11 @@ package com.example.message.util
 
 
 import android.content.Context
-import android.os.Environment
 import android.util.Base64
 import android.util.Log
 import com.example.message.model.CommonInfor
 import com.google.android.gms.tasks.Tasks
+import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
@@ -17,7 +17,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.math.BigInteger
-import java.util.LinkedList
 import javax.crypto.spec.SecretKeySpec
 
 class HandShake {
@@ -25,16 +24,21 @@ class HandShake {
     private val handShakeRef: DatabaseReference = database.child("hand-shakes")
     //private val messagesRef: DatabaseReference = database.child("handshake")
 
-    val receiverID : String
-    val senderID : String
-    val receiverPK: Pair<BigInteger, BigInteger>
-    val context: Context;
+    private val receiverID: String
+    private val senderID: String
+    private val receiverPK: Pair<BigInteger, BigInteger>
+    val context: Context
 
-    constructor(receiverID: String, senderID: String, receiverPK: Pair<BigInteger, BigInteger>, context: Context) {
+    constructor(
+        receiverID: String,
+        senderID: String,
+        receiverPK: Pair<BigInteger, BigInteger>,
+        context: Context
+    ) {
         this.receiverID = receiverID
-        this.senderID = senderID;
-        this.receiverPK = receiverPK;
-        this.context = context;
+        this.senderID = senderID
+        this.receiverPK = receiverPK
+        this.context = context
     }
 
     fun sendMessage(
@@ -48,7 +52,7 @@ class HandShake {
             )
     }
 
-    public fun sendHandShakeRequest() {
+    fun sendHandShakeRequest() {
         Log.d("sending request", "sending...")
         //SecretKey
         val aesKey = AESEncryption.generateKey()
@@ -78,18 +82,17 @@ class HandShake {
 
     }
 
-    public fun acceptHandShakeRequest() {
+    fun acceptHandShakeRequest() {
 
         GlobalScope.launch(Dispatchers.IO) {
             var handShake = CommonInfor()
 
             val result = async {
-                val snapshot = Tasks.await(handShakeRef.get())
-                return@async snapshot
+                return@async Tasks.await<DataSnapshot?>(handShakeRef.get())
             }.await()
-            result.children.forEach {ds ->
+            result.children.forEach { ds ->
                 val data = ds.getValue(CommonInfor::class.java)
-                if (data!!.senderID == receiverID && data!!.retrieverID == senderID)
+                if (data!!.senderID == senderID && data.retrieverID == receiverID)
                     handShake = data
             }
             Log.d("accep request", handShake.toString())
@@ -103,11 +106,11 @@ class HandShake {
         }
     }
 
-    public fun saveAESKey(key: ByteArray) {
+    fun saveAESKey(key: ByteArray) {
 
         val str_key = Base64.encodeToString(key, Base64.DEFAULT)
 
-        val path = context.getFilesDir()
+        val path = context.filesDir
 
         val letDirectory = File(path, "AESKeys")
         letDirectory.mkdirs()

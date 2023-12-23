@@ -1,6 +1,5 @@
 package com.example.message.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -8,18 +7,12 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.message.model.CommonInfor
 import com.example.message.model.User
 import com.example.message.util.Temp
-import com.google.android.gms.tasks.Tasks
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
-import java.util.LinkedList
 
 class HomeViewModel : ViewModel() {
 
@@ -50,35 +43,6 @@ class HomeViewModel : ViewModel() {
 
         val handShakeRef = database.child("hand-shakes")
         val usersRef = database.child("users")
-//        var listHandShake: ArrayList<CommonInfor> = ArrayList<CommonInfor>()
-//
-//        GlobalScope.launch(Dispatchers.IO) {
-//            var list = ArrayList<CommonInfor>()
-//            val result = async {
-//                val snapshot = Tasks.await(handShakeRef.get())
-//                return@async snapshot
-//            }.await()
-//            result.children.forEach {ds ->
-//                val data = ds.getValue(CommonInfor::class.java)
-//                Log.d("hs", data.toString() + " " + (data!!.senderID == Temp.currentUser?.uid).toString())
-//                if (data!!.senderID == Temp.currentUser?.uid || data!!.retrieverID == Temp.currentUser?.uid) {
-//                    Log.d("check", "True")
-//                    list.add(data!!)
-//                }
-//            }
-//            withContext(Dispatchers.Main) {
-//
-//            }
-//        }
-//
-//        var listFriend : ArrayList<String> = ArrayList()
-//        listHandShake.forEach {ele ->
-//            if (ele.retrieverID != Temp.currentUser?.uid)
-//                listFriend.add(ele.senderID!!)
-//            if (ele.senderID == Temp.currentUser?.uid)
-//                listFriend.add(ele.retrieverID!!)
-//        }
-
 
 
         val postListenerHandShake = object : ValueEventListener {
@@ -134,13 +98,6 @@ class HomeViewModel : ViewModel() {
         }
 
         usersRef.addValueEventListener(postListener)
-
-
-//        val db = Firebase.firestore
-//        val docRef = db.collection("hand-shakes")
-//
-//        docRef.whereEqualTo("senderID", Temp.currentUser!!.uid)
-//        docRef.whereEqualTo("retrieverID", Temp.currentUser!!.uid)
 
     }
 

@@ -10,9 +10,7 @@ import com.example.message.databinding.ItemRetrievedMessageBinding
 import com.example.message.databinding.ItemSentMessageBinding
 import com.example.message.model.Message
 import com.example.message.util.AESEncryption
-import com.example.message.util.RSA
 import com.example.message.util.Temp
-import com.example.message.util.bigIntegerToUtf8
 import java.math.BigInteger
 
 class MessageAdapter(
@@ -87,12 +85,6 @@ class MessageAdapter(
 
             is ItemRetrievedViewHolder -> {
                 val text = message.text.toString()
-//                val textBigInteger = RSA.decrypt(
-//                    BigInteger(text),
-//                    privateKey
-//                )
-//                Log.d(this.toString(), "$textBigInteger")
-//                message.text = bigIntegerToUtf8(textBigInteger)
                 val temp = AESEncryption.decrypt(text.toByteArray(), Temp.aesKey!!).toString()
                 Log.d(this.toString(), temp)
                 message.text = temp
