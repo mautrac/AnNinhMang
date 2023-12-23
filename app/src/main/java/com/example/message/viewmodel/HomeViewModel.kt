@@ -44,41 +44,6 @@ class HomeViewModel : ViewModel() {
         val handShakeRef = database.child("hand-shakes")
         val usersRef = database.child("users")
 
-
-        val postListenerHandShake = object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                handShakeList.clear()
-                for (snapshot in dataSnapshot.children) {
-                    val hs = snapshot.getValue(CommonInfor::class.java)
-                    hs?.let {
-                        if (hs.senderID == Temp.currentUser?.uid || hs.retrieverID == Temp.currentUser?.uid)
-                            handShakeList.add(hs)
-                    }
-                }
-                //_users.value = userList
-            }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-                // ...
-            }
-        }
-        handShakeRef.addValueEventListener(postListenerHandShake)
-
-        _handShakes.observeForever {
-            friendList.clear()
-            it.forEach {hs ->
-                users.value!!.forEach {user ->
-                    val id = user.uid
-                    if (id != Temp.currentUser?.uid) {
-                        if (id == hs.senderID || id == hs.retrieverID)
-                            friendList.add(user)
-                    }
-                }
-            }
-            _friends.value = friendList
-        }
-
-
         val postListener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 userList.clear()
@@ -96,8 +61,45 @@ class HomeViewModel : ViewModel() {
                 // ...
             }
         }
-
         usersRef.addValueEventListener(postListener)
+
+
+        val postListenerHandShake = object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                handShakeList.clear()
+                for (snapshot in dataSnapshot.children) {
+                    val hs = snapshot.getValue(CommonInfor::class.java)
+                    hs?.let {
+                        if (hs.senderID == Temp.currentUser?.uid || hs.retrieverID == Temp.currentUser?.uid)
+                            handShakeList.add(hs)
+                    }
+                }
+                _handShakes.value = handShakeList
+                //_users.value = userList
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                // ...
+            }
+        }
+        handShakeRef.addValueEventListener(postListenerHandShake)
+
+        _handShakes.observeForever {
+            friendList.clear()
+            it.forEach {hs ->
+                users.value?.forEach {user ->
+                    val id = user.uid
+                    if (id != Temp.currentUser?.uid) {
+                        if (id == hs.senderID || id == hs.retrieverID)
+                            friendList.add(user)
+                    }
+                }
+            }
+            _friends.value = friendList
+        }
+
+
+
 
     }
 

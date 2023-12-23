@@ -63,19 +63,20 @@ class ChatRoomFragment : Fragment() {
             BigInteger(Temp.retriever?.publicKey?.first.toString()),
             BigInteger(Temp.retriever?.publicKey?.second.toString()),
         )
+        Log.d("retriever pk", Temp.retrieverPublicKey.toString())
         //set aes key
 
         var hs = HandShake(uid, Temp.currentUser!!.uid, Temp.retrieverPublicKey!!, requireContext())
         hs.acceptHandShakeRequest()
 
-//        if (!readAESKeyToTemp(uid) ) {
-//            Log.d("read key", "fail")
-//            //readAESKeyToTemp(uid)
-//
-//        } else {
-//            Log.d("read key", "scuccess")
-//            Log.d("key after reading", Temp.aesKey!!.encoded.size.toString())
-//        }
+        if (!readAESKeyToTemp(uid) ) {
+            Log.d("read key", "fail")
+            //readAESKeyToTemp(uid)
+
+        } else {
+            Log.d("read key", "scuccess")
+            Log.d("key after reading", Temp.aesKey!!.encoded.size.toString())
+        }
 
 
         Log.d(this.toString(), Temp.retrieverPublicKey.toString())

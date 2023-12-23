@@ -53,7 +53,7 @@ class LoginFragment : Fragment() {
             if (it) {
                 if (viewModel.checKeyExist.value == false && viewModel.publicKey != null) {
                     Temp.keyPair = RSA.generateRSAKeys()
-
+                    Log.d("created rsa key", Temp.keyPair.toString())
                     var newUser = User(Temp.currentUser!!.uid,
                                 Temp.currentUser!!.email,
                                 BigIntegerPair(Temp.keyPair!!.first.first.toString(),
@@ -127,18 +127,18 @@ class LoginFragment : Fragment() {
             for (j in 0..contents.length) {
                 if (contents[j] == '\n') {
                     val first = contents.substring(i, j)
-                    val second = contents.substring(j + 1, contents.length - 1)
+                    val second = contents.substring(j + 1, contents.length)
                     val privateKey = Pair(first.toBigInteger(), second.toBigInteger())
                     val publicKey = Pair(viewModel.publicKey.value!!.first!!.toBigInteger(),
                                 viewModel.publicKey.value!!.second!!.toBigInteger() )
                     Temp.keyPair = Pair(publicKey, privateKey)
 
+                    Log.d("READ RSA KEYS", Temp.keyPair.toString())
                     break
                 }
 
             }
         }
-        Log.d("READ RSA KEYS", Temp.keyPair.toString())
     }
 
     fun savePrivateRSAKey() {
@@ -151,8 +151,8 @@ class LoginFragment : Fragment() {
 
         val file = File(letDirectory, Temp.currentUser!!.uid + ".txt")
         file.createNewFile()
-        file.appendText(Temp.keyPair!!.second.first.toString() + "/n")
-        file.appendText(Temp.keyPair!!.second.second.toString() + "/n")
+        file.writeText(Temp.keyPair!!.second.first.toString() + "\n")
+        file.appendText(Temp.keyPair!!.second.second.toString())
 
     }
 }

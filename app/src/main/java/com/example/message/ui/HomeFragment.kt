@@ -57,8 +57,13 @@ class HomeFragment : Fragment() {
             startActivity(Intent(requireContext(), AddFriendActivity::class.java))
         }
 
-        viewModel.users.observe(this@HomeFragment.viewLifecycleOwner) { items ->
-             items?.let {
+//        viewModel.users.observe(this@HomeFragment.viewLifecycleOwner) { items ->
+//             items?.let {
+//                adapter.submitList(it)
+//            }
+//        }
+        viewModel.firends.observe(this@HomeFragment.viewLifecycleOwner) { items ->
+            items?.let {
                 adapter.submitList(it)
             }
         }

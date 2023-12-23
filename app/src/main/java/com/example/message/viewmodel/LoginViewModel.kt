@@ -51,6 +51,7 @@ class LoginViewModel: ViewModel() {
                     Temp.currentUser = auth.currentUser
                     Log.d("Login", Temp.currentUser.toString())
 
+//
                     GlobalScope.launch(Dispatchers.IO) {
                         val result = async {
                             val snapshot = Tasks.await(userRef.orderByChild("email").equalTo(email).get())
@@ -61,28 +62,32 @@ class LoginViewModel: ViewModel() {
                             }
                         }.await()
 
-                        withContext(Dispatchers.Main) { result.also { _publicKey.value = it } }
+                        Log.d("get from fb", result.toString())
+                        withContext(Dispatchers.Main) { result.also {
+                            _publicKey.value = it
+                            _checkKeyExist.value = true
+                            _loginResult.value = true
+                        } }
                     }
-                    Temp.keyPair = RSA.generateRSAKeys()
-                    var publicKey = Temp.keyPair!!.first
-
-                    userRef.orderByChild("email").equalTo(email)
-                        .addListenerForSingleValueEvent(object : ValueEventListener {
-                            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                                if (dataSnapshot.exists()) {
-                                    _checkKeyExist.value = true
-                                    Log.d("check", checKeyExist.toString())
-                                    Log.d("login key", dataSnapshot.children.first().key.toString())
-                                    Temp.realtimeKey=dataSnapshot.children.first().key
-                                    _publicKey.value = dataSnapshot.children.first().getValue(User::class.java)!!.publicKey!!
-                                    //publicKey = dataSnapshot.children.first().key
-                                }
-
-                            }
-                            override fun onCancelled(databaseError: DatabaseError) {
-                                // ...
-                            }
-                        })
+//
+//
+//                    userRef.orderByChild("email").equalTo(email)
+//                        .addListenerForSingleValueEvent(object : ValueEventListener {
+//                            override fun onDataChange(dataSnapshot: DataSnapshot) {
+//                                if (dataSnapshot.exists()) {
+//                                    _checkKeyExist.value = true
+//                                    Log.d("check", checKeyExist.toString())
+//                                    Log.d("login key", dataSnapshot.children.first().key.toString())
+//                                    Temp.realtimeKey=dataSnapshot.children.first().key
+//                                    _publicKey.value = dataSnapshot.children.first().getValue(User::class.java)!!.publicKey!!
+//                                    //publicKey = dataSnapshot.children.first().key
+//                                }
+//
+//                            }
+//                            override fun onCancelled(databaseError: DatabaseError) {
+//                                // ...
+//                            }
+//                        })
 
 
 
@@ -102,9 +107,9 @@ class LoginViewModel: ViewModel() {
 
 
 
-                    Log.d(TAG, "${Temp.keyPair!!.first}\n${Temp.keyPair!!.second}")
+                    //Log.d(TAG, "${Temp.keyPair!!.first}\n${Temp.keyPair!!.second}")
 
-                    _loginResult.value = true
+                    //_loginResult.value = true
                 } else {
                     _loginResult.value = false
                 }
