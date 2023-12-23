@@ -71,7 +71,7 @@ class HandShake {
         Log.d("key int", encodedKey_bigint.toString())
 
         //bigint
-        val encryptedAES1 = RSA.encrypt(BigInteger(1, encodedKey), receiverPK)
+        val encryptedAES1 = RSA.encrypt(BigInteger(encodedKey), receiverPK)
         val encryptedAES = RSA.encrypt(encodedKey_bigint, receiverPK)
 
         Log.d("ec by receiver", encryptedAES1.toString())
@@ -131,7 +131,7 @@ class HandShake {
         val file = File(letDirectory, senderID + ".txt")
         file.createNewFile()
 
-        file.writeText(receiverID + " " + key.toString() + "\n")
+        file.writeText(receiverID + " " + BigInteger(1, key).toString() + "\n")
 
         Temp.aesKey = SecretKeySpec(key, "AES")
         Log.d("save aes key", senderID + " " + Temp.aesKey!!.encoded.toString())

@@ -1,5 +1,6 @@
 package com.example.message.ui.adapter
 
+import android.util.Base64
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -85,9 +86,13 @@ class MessageAdapter(
 
             is ItemRetrievedViewHolder -> {
                 val text = message.text
-                val temp = AESEncryption.decrypt(text!!.toByteArray(), Temp.aesKey!!).toString()
-                Log.d(this.toString(), temp)
-                message.text = temp
+                val b64 = Base64.decode(text, Base64.DEFAULT)
+
+                val temp = AESEncryption.decrypt(b64, Temp.aesKey!!)
+                val temp2 = AESEncryption.decrypt(temp, Temp.aesKey!!)
+                Log.d(this.toString(), temp.toString())
+                Log.d(this.toString(), temp2.toString())
+                message.text = temp2.toString()
                 holder.bind(message)
             }
         }

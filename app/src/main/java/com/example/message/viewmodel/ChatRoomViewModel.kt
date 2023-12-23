@@ -1,5 +1,6 @@
 package com.example.message.viewmodel
 
+import android.util.Base64
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -70,7 +71,9 @@ class ChatRoomViewModel : ViewModel() {
         } catch (e : Exception) {
             Log.d("key length", Temp.aesKey!!.encoded.size.toString())
         }
-        val textEncrypted = AESEncryption.encrypt(text.toByteArray(), Temp.aesKey!!).toString()
+        val b64 = Base64.encodeToString(text.toByteArray(), Base64.DEFAULT)
+        val textEncrypted = AESEncryption.encrypt(text.toByteArray(), Temp.aesKey!!)
+
 //        val textEncrypted = RSA.encrypt(
 //            utf8ToBigInteger(text),
 //            Temp.retrieverPublicKey!!
@@ -80,7 +83,7 @@ class ChatRoomViewModel : ViewModel() {
             .push()
             .setValue(
                 Message(
-                    senderID, retrievedID, textEncrypted
+                    senderID, retrievedID, b64
                 )
             )
     }
