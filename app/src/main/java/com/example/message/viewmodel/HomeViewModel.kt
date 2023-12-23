@@ -56,36 +56,6 @@ class HomeViewModel : ViewModel() {
 
         val handShakeRef = database.child("hand-shakes")
         val usersRef = database.child("users")
-//        var listHandShake: ArrayList<CommonInfor> = ArrayList<CommonInfor>()
-//
-//        GlobalScope.launch(Dispatchers.IO) {
-//            var list = ArrayList<CommonInfor>()
-//            val result = async {
-//                val snapshot = Tasks.await(handShakeRef.get())
-//                return@async snapshot
-//            }.await()
-//            result.children.forEach {ds ->
-//                val data = ds.getValue(CommonInfor::class.java)
-//                Log.d("hs", data.toString() + " " + (data!!.senderID == Temp.currentUser?.uid).toString())
-//                if (data!!.senderID == Temp.currentUser?.uid || data!!.retrieverID == Temp.currentUser?.uid) {
-//                    Log.d("check", "True")
-//                    list.add(data!!)
-//                }
-//            }
-//            withContext(Dispatchers.Main) {
-//
-//            }
-//        }
-//
-//        var listFriend : ArrayList<String> = ArrayList()
-//        listHandShake.forEach {ele ->
-//            if (ele.retrieverID != Temp.currentUser?.uid)
-//                listFriend.add(ele.senderID!!)
-//            if (ele.senderID == Temp.currentUser?.uid)
-//                listFriend.add(ele.retrieverID!!)
-//        }
-
-
 
         val postListenerHandShake = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {

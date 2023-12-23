@@ -67,9 +67,7 @@ class LoginViewModel: ViewModel() {
                             }
                         }.await()
 
-                        withContext(Dispatchers.Main) {
-                            _publicKey.value = result!!
-                        }
+                        withContext(Dispatchers.Main) { result.also { _publicKey.value = it } }
                     }
                     //Temp.keyPair = RSA.generateRSAKeys()
                     //var publicKey = Temp.keyPair!!.first

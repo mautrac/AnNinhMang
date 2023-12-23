@@ -89,7 +89,7 @@ class HandShake {
 
     public fun saveAESKey(key: ByteArray) {
         val path = context.getFilesDir()
-
+        Log.d("Path", "saveAESKey:$path")
         val letDirectory = File(path, "AESKeys")
         letDirectory.mkdirs()
 
