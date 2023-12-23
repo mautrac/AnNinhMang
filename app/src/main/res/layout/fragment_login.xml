@@ -57,6 +57,7 @@
                 android:id="@+id/username"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:text="ndatgs@gmail.com"
                 android:maxLines="1"/>
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -76,6 +77,7 @@
                 android:id="@+id/password"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:text="123456"
                 android:maxLines="1"/>
         </com.google.android.material.textfield.TextInputLayout>
 
