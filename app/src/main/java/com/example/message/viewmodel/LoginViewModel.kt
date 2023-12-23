@@ -33,11 +33,11 @@ class LoginViewModel: ViewModel() {
     private val userRef: DatabaseReference = database.child("users")
 
     private val _loginResult = MutableLiveData<Boolean>()
-    private var _publicKey = MutableLiveData<BigIntegerPair>()
+    private var _publicKey = MutableLiveData<BigIntegerPair?>(null)
     private var _checkKeyExist = MutableLiveData<Boolean>(false)
 
     val loginResult: LiveData<Boolean> = _loginResult
-    val publicKey: LiveData<BigIntegerPair> = _publicKey
+    val publicKey: LiveData<BigIntegerPair?> = _publicKey
     val checKeyExist : LiveData<Boolean> = _checkKeyExist
 
 
@@ -63,7 +63,14 @@ class LoginViewModel: ViewModel() {
                         }.await()
 
                         Log.d("get from fb", result.toString())
-                        withContext(Dispatchers.Main) { result.also {
+                        withContext(Dispatchers.Main) {
+                            if (result == null) {
+                                _publicKey.value = null
+                                _checkKeyExist.value = false
+                                _loginResult.value = true
+                            }
+
+                            result.also {
                             _publicKey.value = it
                             _checkKeyExist.value = true
                             _loginResult.value = true

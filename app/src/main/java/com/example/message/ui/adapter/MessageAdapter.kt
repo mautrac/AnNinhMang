@@ -84,8 +84,8 @@ class MessageAdapter(
             }
 
             is ItemRetrievedViewHolder -> {
-                val text = message.text.toString()
-                val temp = AESEncryption.decrypt(text.toByteArray(), Temp.aesKey!!).toString()
+                val text = message.text
+                val temp = AESEncryption.decrypt(text!!.toByteArray(), Temp.aesKey!!).toString()
                 Log.d(this.toString(), temp)
                 message.text = temp
                 holder.bind(message)

@@ -131,7 +131,7 @@ class HandShake {
         val file = File(letDirectory, senderID + ".txt")
         file.createNewFile()
 
-        file.writeText(receiverID + " " + str_key + "\n")
+        file.writeText(receiverID + " " + key.toString() + "\n")
 
         Temp.aesKey = SecretKeySpec(key, "AES")
         Log.d("save aes key", senderID + " " + Temp.aesKey!!.encoded.toString())

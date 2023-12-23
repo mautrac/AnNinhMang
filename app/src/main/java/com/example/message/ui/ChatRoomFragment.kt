@@ -66,12 +66,12 @@ class ChatRoomFragment : Fragment() {
         Log.d("retriever pk", Temp.retrieverPublicKey.toString())
         //set aes key
 
-        var hs = HandShake(uid, Temp.currentUser!!.uid, Temp.retrieverPublicKey!!, requireContext())
-        hs.acceptHandShakeRequest()
 
         if (!readAESKeyToTemp(uid) ) {
             Log.d("read key", "fail")
             //readAESKeyToTemp(uid)
+            var hs = HandShake(uid, Temp.currentUser!!.uid, Temp.retrieverPublicKey!!, requireContext())
+            hs.acceptHandShakeRequest()
 
         } else {
             Log.d("read key", "scuccess")
@@ -131,7 +131,7 @@ class ChatRoomFragment : Fragment() {
             Log.d("file", contents)
             var i = 0
             var spaceIdx = 0
-            for (j in 0..contents.length) {
+            for (j in 0..contents.length - 1) {
                 if (contents[j] == '\n') {
                     val retrieverId = contents.substring(i, spaceIdx)
                     val aesKeyStr = contents.substring(spaceIdx + 1, j)
