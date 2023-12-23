@@ -61,10 +61,10 @@ class HandShake {
         val encodedKey = aesKey.encoded
         val str_key = Base64.encodeToString(encodedKey, Base64.DEFAULT)
 
-        //Log.d("create key str", str_key)
-        //Log.d("create key", encodedKey.toString())
-        //Log.d("create key 1", encodedKey.size.toString())
-        //Log.d("create key", encodedKey.toString())
+        Log.d("create key str", str_key)
+        Log.d("create key", encodedKey.toString())
+        Log.d("create key 1", encodedKey.size.toString())
+        Log.d("create key", encodedKey.toString())
 
         //BigInteger
         val encodedKey_bigint = BigInteger(encodedKey)
@@ -92,7 +92,7 @@ class HandShake {
             }.await()
             result.children.forEach { ds ->
                 val data = ds.getValue(CommonInfor::class.java)
-                if (data!!.senderID == senderID && data.retrieverID == receiverID)
+                if (data!!.senderID ==receiverID  && data.retrieverID == senderID)
                     handShake = data
             }
             Log.d("accep request", handShake.toString())
@@ -111,14 +111,14 @@ class HandShake {
         val str_key = Base64.encodeToString(key, Base64.DEFAULT)
 
         val path = context.filesDir
-
+        Log.d("saveAES", "saveAESKey: $path")
         val letDirectory = File(path, "AESKeys")
         letDirectory.mkdirs()
 
         val file = File(letDirectory, senderID + ".txt")
         file.createNewFile()
 
-        file.writeText(receiverID + " " + str_key + "\n")
+        file.writeText("$receiverID $str_key\n")
 
         Temp.aesKey = SecretKeySpec(key, "AES")
         Log.d("save aes key", senderID + " " + Temp.aesKey!!.encoded.size)

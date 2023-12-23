@@ -1,6 +1,5 @@
 package com.example.message.ui
 
-import android.content.Context
 import android.os.Bundle
 import android.util.Base64
 import android.util.Log
@@ -10,7 +9,6 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import com.example.message.R
 import com.example.message.databinding.FragmentChatroomBinding
@@ -65,17 +63,17 @@ class ChatRoomFragment : Fragment() {
         )
         //set aes key
 
-        var hs = HandShake(uid, Temp.currentUser!!.uid, Temp.retrieverPublicKey!!, requireContext())
-        hs.acceptHandShakeRequest()
 
-//        if (!readAESKeyToTemp(uid) ) {
-//            Log.d("read key", "fail")
-//            //readAESKeyToTemp(uid)
-//
-//        } else {
-//            Log.d("read key", "scuccess")
-//            Log.d("key after reading", Temp.aesKey!!.encoded.size.toString())
-//        }
+
+        if (!readAESKeyToTemp(uid) ) {
+            Log.d("read key", "fail")
+            var hs = HandShake(uid, Temp.currentUser!!.uid, Temp.retrieverPublicKey!!, requireContext())
+            hs.acceptHandShakeRequest()
+
+        } else {
+            Log.d("read key", "scuccess")
+            Log.d("key after reading", Temp.aesKey!!.encoded.size.toString())
+        }
 
 
         Log.d(this.toString(), Temp.retrieverPublicKey.toString())
