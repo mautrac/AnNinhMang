@@ -56,13 +56,14 @@ class HandShake {
         //bytearray
         val encodedKey = aesKey.encoded
         val str_key = Base64.encodeToString(encodedKey, Base64.DEFAULT)
+
         //Log.d("create key str", str_key)
         //Log.d("create key", encodedKey.toString())
         //Log.d("create key 1", encodedKey.size.toString())
         //Log.d("create key", encodedKey.toString())
 
         //BigInteger
-        val encodedKey_bigint = BigInteger(str_key, 64)
+        val encodedKey_bigint = BigInteger(encodedKey)
 
         //bigint
         val encryptedAES1 = RSA.encrypt(BigInteger(1, encodedKey), receiverPK)
