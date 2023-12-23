@@ -23,7 +23,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class LoginViewModel: ViewModel() {
+class LoginViewModel : ViewModel() {
 
 
     private val auth = Firebase.auth
@@ -38,7 +38,7 @@ class LoginViewModel: ViewModel() {
 
     val loginResult: LiveData<Boolean> = _loginResult
     val publicKey: LiveData<BigIntegerPair> = _publicKey
-    val checKeyExist : LiveData<Boolean> = _checkKeyExist
+    val checKeyExist: LiveData<Boolean> = _checkKeyExist
 
 
     fun login(email: String, password: String) {
@@ -54,7 +54,8 @@ class LoginViewModel: ViewModel() {
 //
                     GlobalScope.launch(Dispatchers.IO) {
                         val result = async {
-                            val snapshot = Tasks.await(userRef.orderByChild("email").equalTo(email).get())
+                            val snapshot =
+                                Tasks.await(userRef.orderByChild("email").equalTo(email).get())
                             if (snapshot.exists()) {
                                 snapshot.children.first().getValue(User::class.java)!!.publicKey!!
                             } else {
@@ -63,11 +64,23 @@ class LoginViewModel: ViewModel() {
                         }.await()
 
                         Log.d("get from fb", result.toString())
-                        withContext(Dispatchers.Main) { result.also {
-                            _publicKey.value = it
-                            _checkKeyExist.value = true
-                            _loginResult.value = true
-                        } }
+                        withContext(Dispatchers.Main) {
+                            if(result==null){
+
+                                _checkKeyExist.value=false
+                                _loginResult.value = true
+
+                            }
+                            else {
+                                result.also {
+                                    _publicKey.value = it
+                                    _checkKeyExist.value = true
+                                    _loginResult.value = true
+                                }
+
+                            }
+
+                        }
                     }
 //
 //
@@ -90,7 +103,6 @@ class LoginViewModel: ViewModel() {
 //                        })
 
 
-
 //                    viewModelScope.launch(Dispatchers.IO) {
 //                        saveUser(
 //                            User(
@@ -105,8 +117,6 @@ class LoginViewModel: ViewModel() {
 //                    }
 
 
-
-
                     //Log.d(TAG, "${Temp.keyPair!!.first}\n${Temp.keyPair!!.second}")
 
                     //_loginResult.value = true
@@ -116,7 +126,6 @@ class LoginViewModel: ViewModel() {
             }
         }
     }
-
 
 
     private fun checkLogin(
