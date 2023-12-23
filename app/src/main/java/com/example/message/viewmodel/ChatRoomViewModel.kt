@@ -65,6 +65,11 @@ class ChatRoomViewModel : ViewModel() {
         retrievedID: String,
         text: String
     ) {
+        try {
+            Log.d("key before sending", AESEncryption.encrypt("dai".toByteArray(), Temp.aesKey!!).toString())
+        } catch (e : Exception) {
+            Log.d("key length", Temp.aesKey!!.encoded.size.toString())
+        }
         val textEncrypted = AESEncryption.encrypt(text.toByteArray(), Temp.aesKey!!).toString()
 //        val textEncrypted = RSA.encrypt(
 //            utf8ToBigInteger(text),

@@ -127,7 +127,7 @@ class LoginFragment : Fragment() {
             for (j in 0..contents.length) {
                 if (contents[j] == '\n') {
                     val first = contents.substring(i, j)
-                    val second = contents.substring(j + 1, contents.length)
+                    val second = contents.substring(j + 1, contents.length - 1)
                     val privateKey = Pair(first.toBigInteger(), second.toBigInteger())
                     val publicKey = Pair(viewModel.publicKey.value!!.first!!.toBigInteger(),
                                 viewModel.publicKey.value!!.second!!.toBigInteger() )
