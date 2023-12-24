@@ -78,9 +78,18 @@ class MessageAdapter(
         Log.d(this.toString(), "${message.text}")
         when (holder) {
             is ItemSentViewHolder -> {
-                Temp.messageTemp?.let {
-                    message.text = Temp.messageTemp
-                }
+//                Temp.messageTemp?.let {
+//                    message.text = Temp.messageTemp
+//                }
+//                holder.bind(message)
+                val text = message.text
+                val b64 = Base64.decode(text, Base64.DEFAULT)
+
+                val temp = AESEncryption.decrypt(b64, Temp.aesKey!!)
+                //val temp2 = AESEncryption.decrypt(temp, Temp.aesKey!!)
+                Log.d(this.toString(), temp.toString())
+                //Log.d(this.toString(), temp2.toString())
+                message.text = String(temp, Charsets.UTF_8)
                 holder.bind(message)
             }
 
