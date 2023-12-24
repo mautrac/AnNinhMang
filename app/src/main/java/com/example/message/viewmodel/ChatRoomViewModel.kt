@@ -17,6 +17,8 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import java.nio.charset.Charset
+import java.nio.charset.StandardCharsets
 
 class ChatRoomViewModel : ViewModel() {
 
@@ -71,9 +73,22 @@ class ChatRoomViewModel : ViewModel() {
         } catch (e : Exception) {
             Log.d("key length", Temp.aesKey!!.encoded.size.toString())
         }
-        val b64 = Base64.encodeToString(text.toByteArray(), Base64.DEFAULT)
-        val textEncrypted = AESEncryption.encrypt(text.toByteArray(), Temp.aesKey!!)
+        //val textB64 = Base64.
+        //byte array
+        val textByteArray = text.toByteArray(Charsets.UTF_8)
+        val textEncrypted = AESEncryption.encrypt(textByteArray, Temp.aesKey!!)
+        //string
+        val cipherText = String(textEncrypted, Charsets.UTF_32LE)
+        //byte array
+        val orgTextEncrypted = cipherText.toByteArray(Charsets.UTF_32LE)
 
+
+        val b64 = Base64.encodeToString(textEncrypted, Base64.DEFAULT)
+        val orgTE = Base64.decode(b64, Base64.DEFAULT)
+
+        val decryptedMessage = AESEncryption.decrypt(orgTE, Temp.aesKey!!)
+
+        Log.d("ec message length", textEncrypted.size.toString())
 //        val textEncrypted = RSA.encrypt(
 //            utf8ToBigInteger(text),
 //            Temp.retrieverPublicKey!!

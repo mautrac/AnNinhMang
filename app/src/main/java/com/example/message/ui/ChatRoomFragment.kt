@@ -136,8 +136,9 @@ class ChatRoomFragment : Fragment() {
                     val retrieverId = contents.substring(i, spaceIdx)
                     val aesKeyStr = contents.substring(spaceIdx + 1, j)
                     if (retrieverId.equals(uid)) {
-                        val aesKeyByteArray = BigInteger(aesKeyStr)
-                        Temp.aesKey = SecretKeySpec(aesKeyByteArray.toByteArray(), "AES")
+                        //val aesKeyByteArray = BigInteger(aesKeyStr)
+                        val aesKeyByteArray = Base64.decode(aesKeyStr, Base64.DEFAULT)
+                        Temp.aesKey = SecretKeySpec(aesKeyByteArray, "AES")
                         check = true
                         break
                     }
