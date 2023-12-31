@@ -142,8 +142,8 @@ class HandShake {
         file.createNewFile()
 
         //file.writeText(receiverID + " " + BigInteger(1, key).toString() + "\n")
-        file.writeText(receiverID + " " + str_key + "\n")
-        //file.appendText(receiverID + " " + str_key + "\n")
+        //file.writeText(receiverID + " " + str_key + "\n")
+        file.appendText(receiverID + " " + str_key + "\n")
         Temp.aesKey = SecretKeySpec(key, "AES")
         Log.d("save aes key", senderID + " " + Temp.aesKey!!.encoded.toString())
     }
