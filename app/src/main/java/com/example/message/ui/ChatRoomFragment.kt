@@ -140,13 +140,13 @@ class ChatRoomFragment : Fragment() {
                         val aesKeyByteArray = Base64.decode(aesKeyStr, Base64.DEFAULT)
                         Temp.aesKey = SecretKeySpec(aesKeyByteArray, "AES")
                         check = true
+                        Log.d("read key from file", Temp.aesKey!!.encoded.size.toString())
                         break
                     }
                 }
                 if (contents[j] == ' ')
                     spaceIdx = j
             }
-            Log.d("read key from file", Temp.aesKey!!.encoded.size.toString())
         }
         return check
     }

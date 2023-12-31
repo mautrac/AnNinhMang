@@ -58,7 +58,13 @@ class HandShake {
         val aesKey = AESEncryption.generateKey()
 
         //bytearray
-        val encodedKey = aesKey.encoded
+        var encodedKey = aesKey.encoded
+
+        while (encodedKey[0] < 0) {
+            Log.d("recreate encoded key", encodedKey.toString())
+            encodedKey = aesKey.encoded
+        }
+
         val str_key = Base64.encodeToString(encodedKey, Base64.DEFAULT)
 
         Log.d("create key str", str_key)
@@ -71,8 +77,9 @@ class HandShake {
         Log.d("key int", encodedKey_bigint.toString())
 
         //bigint
+        //val temp = str_key.toBigInteger()
         val encryptedAES1 = RSA.encrypt(BigInteger(encodedKey), receiverPK)
-        val encryptedAES = RSA.encrypt(encodedKey_bigint, receiverPK)
+        //val encryptedAES = RSA.encrypt(temp, receiverPK)
 
         Log.d("ec by receiver", encryptedAES1.toString())
         val ec2 = RSA.encrypt(encodedKey_bigint, Temp.keyPair!!.first)
@@ -83,7 +90,9 @@ class HandShake {
         Log.d("dc key", orgKey.encoded.toString())
         Log.d("dc key int", BigInteger(1, orgKey.encoded).toString())
         Log.d("dc key length", orgKey.encoded.size.toString())
+
         val message = CommonInfor("Handshake", senderID, receiverID, encryptedAES1.toString())
+        //val message = CommonInfor("Handshake", senderID, receiverID, encodedKey_bigint.toString())
 
         sendMessage(message)
 
@@ -109,7 +118,8 @@ class HandShake {
             withContext(Dispatchers.Main) {
                 val encryptedAES = handShake.encryptedAESKey
                 Log.d("received e aeskey", encryptedAES.toString())
-                val aesKey = RSA.decrypt(encryptedAES!!.toBigInteger(), Temp.keyPair!!.second)
+                val num = BigInteger(encryptedAES, 10)
+                val aesKey = RSA.decrypt(num, Temp.keyPair!!.second)
                 Log.d("encerypt aeskey", aesKey.toString())
 
                 saveAESKey(aesKey.toByteArray())
@@ -133,6 +143,7 @@ class HandShake {
 
         //file.writeText(receiverID + " " + BigInteger(1, key).toString() + "\n")
         file.writeText(receiverID + " " + str_key + "\n")
+        //file.appendText(receiverID + " " + str_key + "\n")
         Temp.aesKey = SecretKeySpec(key, "AES")
         Log.d("save aes key", senderID + " " + Temp.aesKey!!.encoded.toString())
     }

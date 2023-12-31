@@ -89,20 +89,24 @@ class MessageAdapter(
                 //val temp2 = AESEncryption.decrypt(temp, Temp.aesKey!!)
                 Log.d(this.toString(), temp.toString())
                 //Log.d(this.toString(), temp2.toString())
-                message.text = String(temp, Charsets.UTF_8)
-                holder.bind(message)
+                //message.text = String(temp, Charsets.UTF_8)
+                var m = message.copy()
+                m.text = String(temp, Charsets.UTF_8)
+                holder.bind(m)
             }
 
             is ItemRetrievedViewHolder -> {
                 val text = message.text
                 val b64 = Base64.decode(text, Base64.DEFAULT)
-
+                Log.d("Message decryption", b64.size.toString())
                 val temp = AESEncryption.decrypt(b64, Temp.aesKey!!)
                 //val temp2 = AESEncryption.decrypt(temp, Temp.aesKey!!)
                 Log.d(this.toString(), temp.toString())
                 //Log.d(this.toString(), temp2.toString())
-                message.text = String(temp, Charsets.UTF_8)
-                holder.bind(message)
+                //message.text = String(temp, Charsets.UTF_8)
+                var m = message.copy()
+                m.text = String(temp, Charsets.UTF_8)
+                holder.bind(m)
             }
         }
     }

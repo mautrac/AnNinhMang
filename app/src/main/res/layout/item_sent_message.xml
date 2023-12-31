@@ -7,7 +7,9 @@
 
             <variable
                 name="message"
-                type="com.example.message.model.Message" />
+                type="com.example.message.model.Message"
+
+                />
         </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
