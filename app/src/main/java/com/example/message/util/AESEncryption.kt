@@ -19,9 +19,16 @@ class AESEncryption {
         }
 
         fun decrypt(data: ByteArray, secretKey: SecretKey): ByteArray {
-            val cipher = Cipher.getInstance("AES")
-            cipher.init(Cipher.DECRYPT_MODE, secretKey)
-            return cipher.doFinal(data)
+            return try {
+                val cipher = Cipher.getInstance("AES")
+                cipher.init(Cipher.DECRYPT_MODE, secretKey)
+                cipher.doFinal(data)
+            } catch (e: Exception) {
+
+                e.printStackTrace()
+                data
+            }
         }
+
     }
 }
