@@ -55,13 +55,14 @@ class HandShake {
     fun sendHandShakeRequest() {
         Log.d("sending request", "sending...")
         //SecretKey
-        val aesKey = AESEncryption.generateKey()
+        var aesKey = AESEncryption.generateKey()
 
         //bytearray
         var encodedKey = aesKey.encoded
 
         while (encodedKey[0] < 0) {
             Log.d("recreate encoded key", encodedKey.toString())
+            aesKey = AESEncryption.generateKey()
             encodedKey = aesKey.encoded
         }
 
