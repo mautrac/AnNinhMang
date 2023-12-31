@@ -113,6 +113,7 @@ class ChatRoomFragment : Fragment() {
             Temp.messageTemp = text
             binding.textInput.setText("")
         }
+        binding.recyclerViewChats.adapter?.notifyDataSetChanged()
 
     }
 
