@@ -7,13 +7,9 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContentProviderCompat
-import androidx.fragment.app.activityViewModels
 import com.example.message.util.HandShake
 import com.example.message.util.Temp
 import com.example.message.viewmodel.AddFriendViewModel
-import com.example.message.viewmodel.LoginViewModel
-import com.example.message.viewmodel.LoginViewModelFactory
 import java.math.BigInteger
 
 class AddFriendActivity : AppCompatActivity() {
@@ -57,7 +53,7 @@ class AddFriendActivity : AppCompatActivity() {
 
                 Toast.makeText(this, "Đã thêm vào danh sách bạn bè", Toast.LENGTH_SHORT).show()
             } else {
-                Toast.makeText(this, result, Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Email khong ton tai ", Toast.LENGTH_SHORT).show()
             }
         }
     }
