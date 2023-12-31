@@ -133,7 +133,7 @@ class ChatRoomFragment : Fragment() {
             var i = 0
             var spaceIdx = 0
             for (j in 0..contents.length - 1) {
-                if (contents[j] == '\n') {
+                if (contents[j] == '\n' && i < j) {
                     val retrieverId = contents.substring(i, spaceIdx)
                     val aesKeyStr = contents.substring(spaceIdx + 1, j)
                     if (retrieverId.equals(uid)) {
@@ -144,6 +144,7 @@ class ChatRoomFragment : Fragment() {
                         Log.d("read key from file", Temp.aesKey!!.encoded.size.toString())
                         break
                     }
+                    i = j + 2
                 }
                 if (contents[j] == ' ')
                     spaceIdx = j
